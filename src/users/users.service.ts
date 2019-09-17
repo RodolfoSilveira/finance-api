@@ -6,7 +6,13 @@ import { IUsers } from '../models/users.interface';
 import * as sharp from 'sharp';
 import * as path from 'path';
 import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
 
+function generateToken (params = {}): string {
+  return jwt.sign(params, process.env.JWT_SECRET, {
+    expiresIn: 86400
+  })
+}
 @Injectable()
 export class UsersService {
   constructor(
@@ -32,7 +38,7 @@ export class UsersService {
     }
   }
 
-  async create(users: IUsers, file: any): Promise<IUsers> {
+  async create(users: IUsers, file: any): Promise<any> {
     const { name, email, password } = users
     const { originalname } = file
 
@@ -61,7 +67,11 @@ export class UsersService {
         avatar: fullName
       }
 
-      return await this.userRepository.save(user);
+      const data = await this.userRepository.save(user);
+
+      data.password = undefined;
+
+      return {data, token: generateToken({ id: data.id })};
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }

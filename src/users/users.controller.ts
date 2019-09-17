@@ -19,24 +19,6 @@ export class UsersController {
     return await this.userService.findOne(id);
   }
 
-  @Post()
-  @UseInterceptors(FileInterceptor('avatar', {
-    storage: diskStorage({
-      destination: path.resolve(__dirname, '..', '..', 'uploads'),
-      filename: (req, file, cb) => {
-        const randomName = Array(32)
-        .fill(null)
-        .map(() => (Math.round(Math.random() * 16))
-        .toString(16))
-        .join('')
-        return cb(null, `${randomName}${file.originalname}`)
-      }
-    }),
-  }))
-  async store(@Body() users: IUsers, @UploadedFile() file: IUsers){
-    return await this.userService.create(users, file);
-  }
-
   @Post('/:id')
   @UseInterceptors(FileInterceptor('avatar', {
     storage: diskStorage({
