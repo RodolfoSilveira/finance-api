@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Accounts } from '../models/accounts.entity';
 import { Repository } from 'typeorm';
 import { IAccounts } from '../models/accounts.interface';
+import { Request } from 'express';
 
 @Injectable()
 export class AccountsService {
@@ -13,15 +14,22 @@ export class AccountsService {
 
   async findAll(): Promise<IAccounts[]> {
     try {
-      return await this.accountRepository.find();
+      return await this.accountRepository.find({ relations: ["user"] });
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }
   }
 
-  async store(account: IAccounts): Promise<IAccounts> {
+  async store(account: IAccounts, req: any): Promise<IAccounts> {
     try {
-      return await this.accountRepository.save(account);
+      const {name, price, quantity} = account
+      const data = {
+        name,
+        price,
+        quantity,
+        user: req.userId
+      }
+      return await this.accountRepository.save(data);
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }
@@ -29,15 +37,22 @@ export class AccountsService {
 
   async show(id: number): Promise<IAccounts> {
     try {
-      return await this.accountRepository.findOneOrFail(id);
+      return await this.accountRepository.findOneOrFail(id, { relations: ["user"] });
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }
   }
 
-  async update(account: IAccounts, id: number): Promise<any> {
+  async update(account: IAccounts, id: number, req: any): Promise<any> {
     try {
-      return await this.accountRepository.update(id, account);
+      const {name, price, quantity} = account
+      const data = {
+        name,
+        price,
+        quantity,
+        user: req.userId
+      }
+      return await this.accountRepository.update(id, data);
     } catch (err){
       throw new InternalServerErrorException(err.message);
     }

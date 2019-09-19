@@ -3,4 +3,5 @@ export interface IAccounts {
   name: string;
   price: number;
   quantity: number;
+  user: number;
 }

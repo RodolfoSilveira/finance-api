@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Req } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { IAccounts } from 'src/models/accounts.interface';
 
@@ -12,8 +12,8 @@ export class AccountsController {
   }
 
   @Post()
-  async store(@Body() accounts: IAccounts) {
-    return await this.accountService.store(accounts);
+  async store(@Body() accounts: IAccounts, @Req() req: any) {
+    return await this.accountService.store(accounts, req);
   }
 
   @Get('/:id')
@@ -22,8 +22,8 @@ export class AccountsController {
   }
 
   @Put('/:id')
-  async update(@Param() id: number, @Body() account: IAccounts) {
-    return await this.accountService.update(account, id);
+  async update(@Param() id: number, @Body() account: IAccounts, @Req() req: any) {
+    return await this.accountService.update(account, id, req);
   }
 
   @Delete('/:id')

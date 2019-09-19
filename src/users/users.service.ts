@@ -22,7 +22,7 @@ export class UsersService {
 
   async findAll(): Promise<IUsers[]> {
     try {
-      return await this.userRepository.find();
+      return await this.userRepository.find({ relations: ["accounts"]});
     }catch (err) {
       throw new InternalServerErrorException(err.message);
     }
@@ -30,7 +30,7 @@ export class UsersService {
 
   async findOne(id: number): Promise<IUsers> {
     try {
-      const users = await this.userRepository.findOneOrFail(id);
+      const users = await this.userRepository.findOneOrFail(id, { relations: ["accounts"]});
       users.password = undefined
       return users;
     } catch (err) {
